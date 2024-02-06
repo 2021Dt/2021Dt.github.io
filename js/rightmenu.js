@@ -128,25 +128,22 @@ rmf.copySelect = function () {
 
 //回到顶部
 rmf.scrollToTop = function () {
-    document.getElementsByClassName("menus_items")[1].setAttribute("style","");
-    document.getElementById("name-container").setAttribute("style","display:none");
+    document.getElementsByClassName("menus_items")[1].setAttribute("style", "");
+    document.getElementById("name-container").setAttribute("style", "display:none");
     btf.scrollToDest(0, 500);
 }
-rmf.translate = function () {
-    document.getElementById("translateLink").click();
-}
-rmf.searchinThisPage=()=>{
-    document.body.removeChild(mask);
-    document.getElementsByClassName("local-search-box--input")[0].value=window.getSelection().toString()
-    document.getElementsByClassName("search")[0].click()
-    var evt = document.createEvent("HTMLEvents");evt.initEvent("input", false, false);document.getElementsByClassName("local-search-box--input")[0].dispatchEvent(evt);
-}
-document.body.addEventListener('touchmove', function(e){
-    
+
+document.body.addEventListener('touchmove', function () {
+
 }, { passive: false });
+
+
 function popupMenu() {
     //window.oncontextmenu=function(){return false;}
     window.oncontextmenu = function (event) {
+// 当关掉自定义右键时候直接返回
+        if (mouseMode == "off") return true;
+
         if(event.ctrlKey||document.body.clientWidth<900) return true;
         $('.rightMenu-group.hide').hide();
         if (document.getSelection().toString()) {
@@ -310,3 +307,54 @@ function addLongtabListener(target, callback) {
 }
 
 addLongtabListener(box, popupMenu)
+
+// 全屏
+rmf.fullScreen = function () {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+}
+
+// 右键开关
+if (localStorage.getItem("mouse") == undefined) {
+    localStorage.setItem("mouse", "on");
+}
+var mouseMode = localStorage.getItem("mouse");
+function changeMouseMode() {
+    if (localStorage.getItem("mouse") == "on") {
+        mouseMode = "off";
+        localStorage.setItem("mouse", "off");
+        debounce(function () {
+            new Vue({
+                data: function () {
+                    this.$notify({
+                        title: "切换右键模式成功🍔",
+                        message: "当前鼠标右键已恢复为系统默认！",
+                        position: 'top-left',
+                        offset: 50,
+                        showClose: true,
+                        type: "success",
+                        duration: 5000
+                    });
+                }
+            })
+        }, 300);
+    } else {
+        mouseMode = "on";
+        localStorage.setItem("mouse", "on");
+        debounce(function () {
+            new Vue({
+                data: function () {
+                    this.$notify({
+                        title: "切换右键模式成功🍔",
+                        message: "当前鼠标右键已更换为网站指定样式！",
+                        position: 'top-left',
+                        offset: 50,
+                        showClose: true,
+                        type: "success",
+                        duration: 5000
+                    });
+                }
+            })
+        }, 300);
+    }
+}
